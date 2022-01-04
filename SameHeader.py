@@ -51,11 +51,11 @@ def create_header(originator, event, location_codes, purge_time, issue_time, sta
     data[len(preamble):] = content
     return np.unpackbits(data, bitorder='little'), s
 
-# Encodes a digital PCM audio signal based on binary data using FSK, with each bit lasting 1.92 milliseconds.
+
+# Encodes a digital PCM audio signal based on binary data using FSK, with each bit lasting 1.92 ms.
 def binary_to_signal(binary_data, sample_rate):
     bit_length = 1.92
-    sr = sample_rate / 1000
-    samples_per_bit = int(bit_length * sr)
+    samples_per_bit = int(bit_length * sample_rate / 1000)
 
     t = np.arange(0, 1.0, 1 / samples_per_bit)
 
@@ -71,12 +71,16 @@ def binary_to_signal(binary_data, sample_rate):
     return arr
 
 
+# Writes signal as WAV audio file.
+def write_audio_file(audio, date_time):
+    scaled_audio = np.int16(audio * 32767)
+    wavfile.write(date_time.strftime("SAME %Y%m%d %H%M%S.wav"), 44100, scaled_audio)
+
+
 # Test code
 lcds = ["000000"]
 now = dt.now()
 sm_bin, sm_text = create_header("PEP", emergency_action_notification, lcds, "0001", now, "EASSIMPC")
 print(sm_text)
 aud = binary_to_signal(sm_bin, 44100)
-aud *= 32767
-aud = np.int16(aud)
-wavfile.write(now.strftime("SAME %Y%m%d %H%M%S.wav"), 44100, aud)
+write_audio_file(aud, now)

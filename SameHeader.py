@@ -29,7 +29,7 @@ emergency_action_notification = SAMEEvent("EAN", SAMEEventCat.warning, "Emergenc
 emergency_action_termination = SAMEEvent("EAT", SAMEEventCat.warning, "Emergency Action Termination")
 
 
-# The definition of the preamble used in the digitally encoded SAME header.
+# The definition of the preamble used in all digitally encoded SAME header and EOMs (End Of Message).
 preamble = np.full(16, 0xAB, dtype='B')
 
 
@@ -71,7 +71,7 @@ def binary_to_signal(binary_data, sample_rate):
     return arr
 
 
-# Writes signal as WAV audio file.
+# Writes signal as a WAV audio file.
 def write_audio_file(audio, date_time):
     scaled_audio = np.int16(audio * 32767)
     wavfile.write(date_time.strftime("SAME %Y%m%d %H%M%S.wav"), 44100, scaled_audio)

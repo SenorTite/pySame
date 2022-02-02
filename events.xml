@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<events xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<event code="ADR" us="O1" lvl="3">Administrative Message</event>
+	<event code="AVA" us="O2" lvl="2">Avalanche Watch</event>
+	<event code="AVW" us="O2" lvl="1">Avalanche Warning</event>
+	<event code="BHW" us="NI" lvl="1">Biological Hazard Warning</event>
+	<event code="BLU" us="O3" lvl="1">Blue Alert</event>
+	<event code="BWW" us="NI" lvl="1">Boil Water Warning</event>
+	<event code="BZW" us="O1" lvl="1">Blizzard Warning</event>
+	<event code="CAE" us="O2" lvl="3">Child Abduction Emergency</event>
+	<event code="CDW" us="O2" lvl="1">Civil Danger Warning</event>
+	<event code="CEM" us="O1" lvl="1">Civil Emergency Message</event>
+	<event code="CFA" us="O2" lvl="2">Coastal Flood Watch</event>
+	<event code="CFW" us="O2" lvl="1">Coastal Flood Warning</event>
+	<event code="CHW" us="NI" lvl="1">Chemical Hazard Warning</event>
+	<event code="CWW" us="NI" lvl="1">Contaminated Water Warning</event>
+	<event code="DBA" us="NI" lvl="2">Dam Watch</event>
+	<event code="DBW" us="NI" lvl="1">Dam Break Warning</event>
+	<event code="DEW" us="NI" lvl="1">Contagious Disease Warning</event>
+	<event code="DMO" us="O1" lvl="4">Practice/Demo Warning</event>
+	<event code="DSW" us="O2" lvl="1">Dust Storm Warning</event>
+	<event code="EAN" us="M" lvl="1">Emergency Action Notification</event>
+	<event code="EAT" us="NI" lvl="3">Emergency Action Termination</event>
+	<event code="EQW" us="O2" lvl="1">Earthquake Warning</event>
+	<event code="EVA" us="NI" lvl="2">Evacuation Watch</event>
+	<event code="EVI" us="O1" lvl="1">Evacuation Immediate</event>
+	<event code="EWW" us="O3" lvl="1">Extreme Wind Warning</event>
+	<event code="FCW" us="NI" lvl="1">Food Contamination Warning</event>
+	<event code="FFA" us="O1" lvl="2">Flash Flood Watch</event>
+	<event code="FFS" us="O1" lvl="3">Flash Flood Statement</event>
+	<event code="FFW" us="O1" lvl="1">Flash Flood Warning</event>
+	<event code="FLA" us="O1" lvl="2">Flood Watch</event>
+	<event code="FLS" us="O1" lvl="3">Flood Statement</event>
+	<event code="FLW" us="O1" lvl="1">Flood Warning</event>
+	<event code="FRW" us="O2" lvl="1">Fire Warning</event>
+	<event code="FSW" us="NI" lvl="1">Flash Freeze Warning</event>
+	<event code="FZW" us="NI" lvl="1">Freeze Warning</event>
+	<event code="HLS" us="O1" lvl="3">Hurricane Local Statement</event>
+	<event code="HMW" us="O2" lvl="1">Hazardous Materials Warning</event>
+	<event code="HUA" us="O1" lvl="2">Hurricane Watch</event>
+	<event code="HUW" us="O1" lvl="1">Hurricane Warning</event>
+	<event code="HWA" us="O1" lvl="2">High Wind Watch</event>
+	<event code="HWW" us="O1" lvl="1">High Wind Warning</event>
+	<event code="IBW" us="NI" lvl="1">Iceberg Warning</event>
+	<event code="IFW" us="NI" lvl="1">Industrial Fire Warning</event>
+	<event code="LAE" us="O2" lvl="3">Local Area Emergency</event>
+	<event code="LEW" us="O2" lvl="1">Law Enforcement Warning</event>
+	<event code="LSW" us="NI" lvl="1">Landslide Warning</event>
+	<event code="NAT" us="NI" lvl="4">National Audible Test</event>
+	<event code="NIC" us="M" lvl="3">National Information Center</event>
+	<event code="NMN" us="O2" lvl="3">Network Notification Message</event>
+	<event code="NPT" us="M" lvl="4">National Periodic Test</event>
+	<event code="NST" us="NI" lvl="4">National Silent Test</event>
+	<event code="NUW" us="O2" lvl="1">Nuclear Power Plant Warning</event>
+	<event code="POS" us="NI" lvl="3">Power Outage Advisory</event>
+	<event code="RHW" us="O2" lvl="1">Radiological Hazard Warning</event>
+	<event code="RMT" us="M" lvl="4">Required Monthly Test</event>
+	<event code="RWT" us="M" lvl="4">Required Weekly Test</event>
+	<event code="SMW" us="O2" lvl="1">Special Marine Warning</event>
+	<event code="SPS" us="O1" lvl="3">Special Weather Statement</event>
+	<event code="SPW" us="O2" lvl="1">Shelter In-Place warning</event>
+	<event code="SQW" us="O1" lvl="1">Snow Squall Warning</event>
+	<event code="SSA" us="O3" lvl="2">Storm Surge Watch</event>
+	<event code="SSW" us="O3" lvl="1">Storm Surge Warning</event>
+	<event code="SVA" us="O1" lvl="2">Severe Thunderstorm Watch</event>
+	<event code="SVR" us="O1" lvl="1">Severe Thunderstorm Warning</event>
+	<event code="SVS" us="O1" lvl="3">Severe Weather Statement</event>
+	<event code="TOA" us="O1" lvl="2">Tornado Watch</event>
+	<event code="TOE" us="O2" lvl="3">911 Telephone Outage Emergency</event>
+	<event code="TOR" us="O1" lvl="1">Tornado Warning</event>
+	<event code="TRA" us="O2" lvl="2">Tropical Storm Watch</event>
+	<event code="TRW" us="O2" lvl="1">Tropical Storm Warning</event>
+	<event code="TSA" us="O1" lvl="2">Tsunami Watch</event>
+	<event code="TSW" us="O1" lvl="1">Tsunami Warning</event>
+	<event code="VOW" us="O2" lvl="1">Volcano Warning</event>
+	<event code="WFA" us="NI" lvl="2">Wild Fire Watch</event>
+	<event code="WFW" us="NI" lvl="1">Wild Fire Warning</event>
+	<event code="WSA" us="O1" lvl="2">Winter Storm Watch</event>
+	<event code="WSW" us="O1" lvl="1">Winter Storm Warning</event>
+</events>

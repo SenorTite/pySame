@@ -125,7 +125,10 @@ def test_code():
     write_audio_file(aud, now)
 
 while 1:
-    rtrn, res, msg = check_1(input())
+    inp = input()
+    if inp == 'q':
+        break
+    rtrn, res, msg = check_1(inp)
     if res == 0:
         print('Chose value: ' + msg)
     elif res == 1:

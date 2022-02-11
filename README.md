@@ -23,7 +23,7 @@ To learn more about originator codes, please refer to the ['Header format' parag
 ## Step 2: Event Code
 Every SAME header carries an event code - a 3-letter code which describes the type of event in question. pySame only supports actual codes which have been defined for use in the EAS (There are around 80 of them).
 
-To choose an event code, you can either enter code itself, or its corresponding event name. For example:
+To choose an event code, you can either enter the code itself, or its corresponding event name. For example:
 
 `TOR` / `Tornado Warning`
 

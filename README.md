@@ -1,37 +1,59 @@
 # pySame
-## Step 1: Originator Code
-The originator code is a 3-letter code which specifies the type of authority / organization which issued the message. In real-life EAS equipment, this value is programmed per unit when put into use, and cannot be altered by the operator.
+## Basic Operation
+### Start
+### Step 1: Originator Code
+Five originator codes have been defined for the EAS:
 
-There are five originator codes defined for the EAS:
+•	`PEP` – Primary Entry Point System  
+•	`CIV` – Civil Authorities  
+•	`WXR` – National Weather Service  
+•	`EAS` – EAS Participant  
+•	`EAN` – Emergency Action Notification Network _(no longer in use)_
 
-•	`PEP` – Primary Entry Point System.  
-•	`CIV` – Civil Authorities.  
-•	`WXR` – National Weather Service.  
-•	`EAS` – EAS Participant.  
-•	`EAN` – Emergency Action Notification Network. (no longer in use)
+Use any of the above. For example:  
+> `PEP`
+#### Errors / Warnings
+Other input values will result in an error:
+> `ERROR: ABC invalid originator code`
 
-To choose an originator code for your SAME header, simply enter the desired 3-letter code. For example: `PEP`.
-
-If you type `EAN` as your originator, a warning will appear:
+If you choose `EAN`, you'll see this warning:
 > `WARNING: Originator code EAN - EAN Network is no longer in use`
 
-Any other input value is invalid and will result in an error:
-> `ERROR: ABC is not a valid originator code`
 
-To learn more about originator codes, please refer to the ['Header format' paragraph in the SAME Wikipedia page](https://en.wikipedia.org/wiki/Specific_Area_Message_Encoding#Header_format), or the [official SAME protocol](https://www.nws.noaa.gov/directives/sym/pd01017012curr.pdf).
 
 ## Step 2: Event Code
-Every SAME header carries an event code - a 3-letter code which describes the type of event in question. pySame only supports actual codes which have been defined for use in the EAS (There are around 80 of them).
+There are 77 valid event codes. They're stored in `pySame/events.xml`.  
+The data was taken from [this](https://en.wikipedia.org/wiki/Specific_Area_Message_Encoding#Event_codes) Wikipedia page.
 
-To choose an event code, you can either enter the code itself, or its corresponding event name. For example:
+Choose event either by three-letter code, or by name. For example:  
+> `TOR` = `Tornado Warning` _(This will give an identical result)_
+#### Errors / Warnings
+Unrecognized values will result in an error:
+> `ERROR: ABC invalid event code`  
+> `ERROR: No event called Red Alert`
 
-`TOR` / `Tornado Warning`
-
-Those input values are identical; Both will result in the `TOR` (Tornado Warning) event code being applied to your SAME header.
-
-Some event codes have been defined for the EAS, but are no longer or never have been listed as being in use. Choosing such a code is possible, but will result in a warning. For example, when entering `EAT` / `Emergency Action Termination`, the following warning will be shown:
+Some event codes (For example, `EAT`) will give this warning:
 > `WARNING: Event EAT - Emergency Action Termination is not in use`
 
-As mentioned earlier, you cannot use fake / fictional / nonexistant event codes or names. Invalid input values will show errors.
+## Step 3: Location Codes
+Use zero for the entire Unites States:
+> `0`
 
-A full list of event codes is available in the ['Event codes' paragraph under the SAME Wikipedia page](https://en.wikipedia.org/wiki/Specific_Area_Message_Encoding#Event_codes).
+For US states use state name / abbreviation. Separate with full stops (`.`). For example:  
+> `Massachusetts. Connecticut. Rhode Island` = `MA. CT. RI` _(This will give an identical result)_
+
+For US counties use county name + comma (`,`) + state name / abv. Separate with full stops. For example:  
+> `New York, NY. Bronx, NY. Kings, NY. Queens, NY. Richmond, NY`
+
+You may pick any combination of states and counties. For example:  
+> `District of Columbia. Montgomery, MD. Prince Georges, MD. Arlington, VA`
+#### Errors / Warnings
+Nonexistant US states / counties will cause these errors:
+> `ERROR: Washington DC is not a state`  
+> `ERROR: County Washington DC not found in District of Columbia`
+
+If you use full stops / commas incorrectly, you may get this error:
+> `ERROR: Doesn't understand "Bronx, NY,"`
+
+If you specify more than 31 locations, you'll get this error (this is due to SAME protocol):
+> `ERROR: 40 location codes entered (maximum is 31)`

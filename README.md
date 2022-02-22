@@ -23,7 +23,7 @@ If you choose `EAN`, you'll see this warning:
 
 ## Step 2: Event Code
 There are 77 valid event codes. They're stored in `pySame/events.xml`.  
-The data was taken from [this](https://en.wikipedia.org/wiki/Specific_Area_Message_Encoding#Event_codes) Wikipedia page.
+The data was collected from [this](https://en.wikipedia.org/wiki/Specific_Area_Message_Encoding#Event_codes) Wikipedia page.
 
 Choose event either by three-letter code, or by name. For example:  
 > `TOR` = `Tornado Warning` _(This will give an identical result)_
@@ -48,11 +48,11 @@ For US counties use county name + comma (`,`) + state name / abv. Separate with 
 You may pick any combination of states and counties. For example:  
 > `District of Columbia. Montgomery, MD. Prince Georges, MD. Arlington, VA`
 #### Errors / Warnings
-Nonexistant US states / counties will cause these errors:
+US states / counties which don't exist will cause these errors:
 > `ERROR: Washington DC is not a state`  
 > `ERROR: County Washington DC not found in District of Columbia`
 
-If you use full stops / commas incorrectly, you may get this error:
+If you use full stops / commas incorrectly, you may get an error:
 > `ERROR: Doesn't understand "Bronx, NY,"`
 
 If you specify more than 31 locations, you'll get this error (this is due to SAME protocol):

@@ -39,10 +39,10 @@ Some event codes (For example, `EAT`) will give this warning:
 Use zero for the entire Unites States:
 > `0`
 
-For US states use state name / abbreviation. Separate with full stops (`.`). For example:  
+For US states, use state name / abbreviation. Separate with full stops (`.`). For example:  
 > `Massachusetts. Connecticut. Rhode Island` = `MA. CT. RI` _(This will give an identical result)_
 
-For US counties use county name + comma (`,`) + state name / abv. Separate with full stops. For example:  
+For US counties, use county name + comma (`,`) + state name / abv. Separate with full stops. For example:  
 > `New York, NY. Bronx, NY. Kings, NY. Queens, NY. Richmond, NY`
 
 You may pick any combination of states and counties. For example:  

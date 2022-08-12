@@ -210,7 +210,35 @@ def check_3(stri):
         return stri, 2, + str(len(lcds)) + ' location codes entered (maximum is 31)'
     return rtn, 0, outmsg
 
+def check_4(stri):
+    if stri == '0':
+        return '0000', 0, '0000'
 
+    if not stri.isnumeric() or len(stri) != 4:
+        return stri, 2, 'Incorrect format, input must be in hhmm format'
+
+    hour = int(stri[:2])
+    minute = int(stri[2:])
+
+    if hour == 0:
+        if minute % 15 == 0 and minute <= 45:
+            return stri, 0, stri
+        else:
+            return stri, 2, 'Purge time under 1 hour must be in 15 minute increments'
+
+    if hour < 6:
+        if minute == 0 or minute == 30:
+            return stri, 0, stri
+        else:
+            return stri, 2, 'Purge time between 1 to 6 hours must be in 30 minute increments'
+
+    if minute == 0:
+        return stri, 0, stri
+    else:
+        return stri, 2, 'Purge time beyond 6 hours must be in 1 hour increments'
+    
+
+        
 
 ###########################################
 
@@ -226,7 +254,7 @@ while 1:
     inp = input()
     if inp == 'q':
         break
-    rtrn, res, msg = check_3(inp)
+    rtrn, res, msg = check_4(inp)
     if res == 0:
         print('Selected value: ' + msg)
     elif res == 1:

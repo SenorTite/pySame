@@ -23,7 +23,7 @@
 
 import numpy as np
 from scipy.io import wavfile
-from datetime import datetime as dt
+from datetime import datetime as dt, date, time, timezone
 from enum import Enum
 import xml.etree.ElementTree as et
 import json
@@ -210,6 +210,7 @@ def check_3(stri):
         return stri, 2, + str(len(lcds)) + ' location codes entered (maximum is 31)'
     return rtn, 0, outmsg
 
+
 def check_4(stri):
     if stri == '0':
         return '0000', 0, '0000'
@@ -236,9 +237,20 @@ def check_4(stri):
         return stri, 0, stri
     else:
         return stri, 2, 'Purge time beyond 6 hours must be in 1 hour increments'
-    
 
+
+def check_5(stri):
+    if stri == '0':
+        noww = dt.now(timezone.utc)
+        return noww, 0, noww.strftime('%j%H%M')
+    try:
+        dtm = dt.strptime(stri, "%d/%m/%y %H:%M").now(timezone.utc)
+        return dtm, 0, dtm.strftime('%j%H%M')
+    except ValueError as e:
+        return stri, 2, 'incorrect format'
         
+def check_6(stri):
+    return 0
 
 ###########################################
 
@@ -254,7 +266,7 @@ while 1:
     inp = input()
     if inp == 'q':
         break
-    rtrn, res, msg = check_4(inp)
+    rtrn, res, msg = check_5(inp)
     if res == 0:
         print('Selected value: ' + msg)
     elif res == 1:

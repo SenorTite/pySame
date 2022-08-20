@@ -36,6 +36,14 @@ fips_root = et.parse('fips.xml').getroot()
 with open('uspsAbs.json') as f:
     state_abvs = json.load(f)
 
+stages = {
+    1 : "Originator code",
+    2 : "Event code",
+    3 : "Location codes",
+    4 : "Purge time",
+    5 : "Issue time",
+    6 : "Station callsign"
+}
 
 ###############################
 
@@ -250,7 +258,51 @@ def check_5(stri):
         return stri, 2, 'incorrect format'
         
 def check_6(stri):
-    return 0
+    return 'EASSIMPC', 0, 'EASSIMPC'
+
+###########################################
+
+def main_loop():
+    instri = ''
+    rtrnstr = ''
+    rtrn = ''
+    res = 0
+    msg = ''
+    i = 0
+    while i < 6:
+
+        print("Stage " + str(i+1) + " - " + stages[i+1] + "\nEnter value: ")
+        instri = input()
+        if i == 0:
+            rtrn, res, msg = check_1(instri)
+        elif i == 1:
+            rtrn, res, msg = check_2(instri)
+        elif i == 2:
+            rtrn, res, msg = check_3(instri)
+        elif i == 3:
+            rtrn, res, msg = check_4(instri)
+        elif i == 4:
+            rtrn, res, msg = check_5(instri)
+        elif i == 5:
+            rtrn, res, msg = check_6(instri)
+        
+        if res == 0:
+            rtrnstr += rtrn
+            i += 1
+        elif res == 1:
+            print('WARNING: ' + msg + '\nWould you still like to proceed?')
+            instri = input()
+            if instri == 'y' or instri == 'Y':
+                rtrnstr += rtrn
+                i += 1
+        elif res == 2:
+            print('ERROR: ' + msg + "\nPlease try again.")
+    
+    return rtrnstr
+
+
+
+
 
 ###########################################
 
@@ -262,14 +314,5 @@ def test_code():
     aud = binary_to_signal(sm_bin, 44100)
     write_audio_file(aud, now)
 
-while 1:
-    inp = input()
-    if inp == 'q':
-        break
-    rtrn, res, msg = check_5(inp)
-    if res == 0:
-        print('Selected value: ' + msg)
-    elif res == 1:
-        print('WARNING: ' + msg)
-    elif res == 2:
-        print('ERROR: ' + msg)
+print("Welcome to PySame")
+mystring = main_loop()

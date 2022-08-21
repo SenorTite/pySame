@@ -6,7 +6,7 @@ _**PySame - SAME header generator**_
 
 PySame will prompt you to enter the required information (the event in question, the issue time of the message, the areas affected, etc), create a valid SAME header which carries that information - and save it on your computer as a short audio file in WAV format. Thanks to PySame, creators of simulated emergency messages can make them more realistic than ever!
 
-PySame is written in Python and available as a standalone application for Windows, Mac and Linux. It's extremely lightwright, easy to use, and requires no specialized background.
+PySame is written in Python and available as a standalone application for Windows and Linux (Mac is on the way). It's extremely lightwright, easy to use, and requires no specialized background.
 
 
 _**Disclaimer:** PySame is provided for entertainment, educational and demonstrative purposes only, without warranty of any kind, either expressed or implied.
@@ -14,9 +14,9 @@ By using the software, you hereby consent that you will be solely responsible fo
 The software and its author are not affiliated, approved by, or otherwise related to any organization or authority which uses or implements the Specific Area Message Encoding protocol (SAME) for official purposes.
 **Under no circumstance shall the author of the software be accountable for any loss or damage or have any otherwise valid liability associated in any way with usage of EAS tones generated using the software.**_
 
-## Basic Operation
-### Start
-### Step 1: Originator Code
+## Operation
+
+### Field 1: Originator Code
 Five originator codes have been defined for the EAS:
 
 •	`PEP` – Primary Entry Point System  
@@ -36,7 +36,7 @@ If you choose `EAN`, you'll see this warning:
 
 
 
-### Step 2: Event Code
+### Field 2: Event Code
 There are 77 valid event codes. They're stored in `pySame/events.xml`.  
 The data was collected from [this](https://en.wikipedia.org/wiki/Specific_Area_Message_Encoding#Event_codes) Wikipedia page.
 
@@ -50,7 +50,7 @@ Unrecognized values will result in an error:
 Some event codes (For example, `EAT`) will give this warning:
 > `WARNING: Event EAT - Emergency Action Termination is not in use`
 
-### Step 3: Location Codes
+### Field 3: Location Codes
 Use zero for the entire Unites States:
 > `0`
 

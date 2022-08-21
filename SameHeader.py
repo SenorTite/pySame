@@ -76,16 +76,14 @@ preamble = np.full(16, 0xAB, dtype='B')
 
 
 # returns a SAME digital header as binary data and its text representation.
-def create_header(originator, event, location_codes, purge_time, issue_time, station_call_sign):
-    s = "ZCZC-" + originator + "-" + event.event_code + "-"
-    for i in range(len(location_codes) - 1):
-        s += location_codes[i] + "-"
-    else:
-        s += location_codes[len(location_codes) - 1] + "+"
-    s += purge_time + "-" + str(issue_time.now().timetuple().tm_yday).zfill(3) + "-"
-    s += str(issue_time.now().timetuple().tm_hour).zfill(2)
-    s += str(issue_time.now().timetuple().tm_min).zfill(2) + "-"
-    s += station_call_sign + "-"
+def create_header(lst):
+    s = "ZCZC-"
+    for i in range(len(lst)):
+        s += lst[i]
+        if i == 2:
+            s += '+'
+        else:
+            s += '-'
 
     content = np.asarray([ord(c) for c in s])
     data = np.empty(len(preamble) + len(content), dtype=np.dtype('B'))
@@ -114,9 +112,9 @@ def binary_to_signal(binary_data, sample_rate):
 
 
 # Writes signal as a WAV audio file.
-def write_audio_file(audio, date_time):
+def write_audio_file(filename, samplerate, audio):
     scaled_audio = np.int16(audio * 32767)
-    wavfile.write(date_time.strftime("SAME %Y%m%d %H%M%S.wav"), 44100, scaled_audio)
+    wavfile.write(filename, samplerate, scaled_audio)
 
 ###########################################
 
@@ -148,6 +146,9 @@ def check_2(stri):
     return stri, 2, 'No event called \"' + stri + '\"'
 
 def check_3(stri):
+    if stri == '0':
+        return '000000', 0, "Nationwide United States"
+    
     lcds = [x.strip() for x in stri.split('.')]
     for i in range(len(lcds)):
         if lcds[i].strip() == '':
@@ -216,7 +217,12 @@ def check_3(stri):
         outmsg += bar + ' '
     if len(lcds) > 31:
         return stri, 2, + str(len(lcds)) + ' location codes entered (maximum is 31)'
-    return rtn, 0, outmsg
+    rtn_final = ''
+    for i in range(len(rtn)):
+        rtn_final += rtn[i]
+        if i != (len(rtn) - 1):
+            rtn_final += '-'
+    return rtn_final, 0, outmsg
 
 
 def check_4(stri):
@@ -250,7 +256,7 @@ def check_4(stri):
 def check_5(stri):
     if stri == '0':
         noww = dt.now(timezone.utc)
-        return noww, 0, noww.strftime('%j%H%M')
+        return noww.strftime('%j%H%M'), 0, noww.strftime('%j%H%M')
     try:
         dtm = dt.strptime(stri, "%d/%m/%y %H:%M").now(timezone.utc)
         return dtm, 0, dtm.strftime('%j%H%M')
@@ -262,16 +268,17 @@ def check_6(stri):
 
 ###########################################
 
+
 def main_loop():
     instri = ''
-    rtrnstr = ''
+    rtrnfinal = []
     rtrn = ''
     res = 0
     msg = ''
     i = 0
     while i < 6:
 
-        print("Stage " + str(i+1) + " - " + stages[i+1] + "\nEnter value: ")
+        print("Field " + str(i+1) + " - " + stages[i+1] + "\nEnter value: ")
         instri = input()
         if i == 0:
             rtrn, res, msg = check_1(instri)
@@ -287,18 +294,18 @@ def main_loop():
             rtrn, res, msg = check_6(instri)
         
         if res == 0:
-            rtrnstr += rtrn
+            rtrnfinal.append(rtrn)
             i += 1
         elif res == 1:
-            print('WARNING: ' + msg + '\nWould you still like to proceed?')
+            print('WARNING: ' + msg + '\nWould you still like to proceed? (Y for yes, enter to retry)')
             instri = input()
             if instri == 'y' or instri == 'Y':
-                rtrnstr += rtrn
+                rtrnfinal.append(rtrn)
                 i += 1
         elif res == 2:
-            print('ERROR: ' + msg + "\nPlease try again.")
+            print('ERROR: ' + msg + " - Please try again.\n")
     
-    return rtrnstr
+    return rtrnfinal
 
 
 
@@ -314,5 +321,12 @@ def test_code():
     aud = binary_to_signal(sm_bin, 44100)
     write_audio_file(aud, now)
 
-print("Welcome to PySame")
-mystring = main_loop()
+print("Welcome to PySame\n")
+mylist = main_loop()
+binaryData, stringData = create_header(mylist)
+print('Header created - ' + stringData + '\nPress Enter to continue')
+
+aud = binary_to_signal(binaryData, 44100)
+filename = dt.now().strftime("SAME %Y%m%d %H%M%S.wav")
+write_audio_file(filename, 44100, aud)
+print("File saved as " + filename)

@@ -28,7 +28,7 @@ from enum import Enum
 import xml.etree.ElementTree as et
 import json
 
-########### LOAD ##############
+##############################################################
 
 events_root = et.parse('events.xml').getroot()
 orgcds_root = et.parse('originatorcodes.xml').getroot()
@@ -36,43 +36,19 @@ fips_root = et.parse('fips.xml').getroot()
 with open('uspsAbs.json') as f:
     state_abvs = json.load(f)
 
+preamble = np.full(16, 0xAB, dtype='B')
+
 stages = {
-    1 : "Originator code",
-    2 : "Event code",
-    3 : "Location codes",
-    4 : "Purge time",
-    5 : "Issue time",
-    6 : "Station callsign"
+    1: "Originator code",
+    2: "Event code",
+    3: "Location codes",
+    4: "Purge time",
+    5: "Issue time",
+    6: "Station callsign"
 }
 
-###############################
 
-# SAME event categories
-class SAMEEventCat(Enum):
-    warning = 1
-    watch = 2
-    advisory = 3
-    test = 4
-
-
-# SAME event object
-class SAMEEvent:
-    def __init__(self, event_code, cat, name):
-        self.event_code = event_code
-        self.cat = cat
-        self.name = name
-
-
-# Definitions of all possible SAME events
-required_monthly_test = SAMEEvent("RMT", SAMEEventCat.test, "Required Monthly Test")
-required_weekly_test = SAMEEvent("RWT", SAMEEventCat.test, "Required Weekly Test")
-demonstration_message = SAMEEvent("DMO", SAMEEventCat.test, "Demonstration Message")
-emergency_action_notification = SAMEEvent("EAN", SAMEEventCat.warning, "Emergency Action Notification")
-emergency_action_termination = SAMEEvent("EAT", SAMEEventCat.warning, "Emergency Action Termination")
-
-
-# The definition of the preamble used in all digitally encoded SAME header and EOMs (End Of Message).
-preamble = np.full(16, 0xAB, dtype='B')
+##############################################################
 
 
 # returns a SAME digital header as binary data and its text representation.
@@ -96,7 +72,6 @@ def create_header(lst):
 def binary_to_signal(binary_data, sample_rate):
     bit_length = 1.92
     samples_per_bit = int(bit_length * sample_rate / 1000)
-
     t = np.arange(0, 1.0, 1 / samples_per_bit)
 
     mark_bit = np.sin(8.0 * np.pi * t)
@@ -116,17 +91,23 @@ def write_audio_file(filename, samplerate, audio):
     scaled_audio = np.int16(audio * 32767)
     wavfile.write(filename, samplerate, scaled_audio)
 
+
 ###########################################
 
+
+# Originator code
 def check_1(stri):
     s = stri.upper()
     fnd = orgcds_root.find(s)
+
     if fnd is None:
         return s, 2, s + ' invalid originator code'
     if len(fnd.attrib) != 0:
         return s, 1, 'Originator code ' + s + ' - ' + fnd.text + ' is no longer in use'
-    return s, 0, s + ' - ' + fnd.text
+    return s, 0, ''
 
+
+# Event code
 def check_2(stri):
     if len(stri) == 3:
         s = stri.upper()
@@ -135,25 +116,31 @@ def check_2(stri):
             return s, 2, '\"' + s + '\" invalid event code'
         if elem.attrib['us'] == 'NI':
             return s, 1, 'Event ' + s + ' - ' + elem.text + ' is not in use'
-        return s, 0, s + ' - ' + elem.text
+        return s, 0, ''
+
     s = stri.lower()
+
     for elem in events_root:
         if elem.text.lower() == s:
             val = elem.attrib['code']
             if elem.attrib['us'] == 'NI':
                 return val, 1, 'Event ' + val + ' - ' + elem.text + ' is not in use'
-            return val, 0, elem.attrib['code'] + ' - ' + elem.text
+            return val, 0, ''
     return stri, 2, 'No event called \"' + stri + '\"'
 
+
+# Location code(s)
 def check_3(stri):
     if stri == '0':
-        return '000000', 0, "Nationwide United States"
+        return '000000', 0, ''
     
     lcds = [x.strip() for x in stri.split('.')]
     for i in range(len(lcds)):
         if lcds[i].strip() == '':
             lcds.pop(i)
+
     rtn = []
+
     for location in lcds:
         foo = [x.strip() for x in location.split(',')]
         if len(foo) > 2:
@@ -176,16 +163,16 @@ def check_3(stri):
                         break
                 if not found_flag:
                     return stri, 2, state_l + ' is not a state'
+
         elif len(foo) == 2:
             state = foo[1]
             county = foo[0]
+            found_county_flag = False
             if len(state) == 2:
                 state = state.upper()
                 if state not in state_abvs.keys():
                     return stri, 2, state + ' is not a state'
-
                 chosen_state_element = fips_root.find('*[@name=\'' + state_abvs[state] + '\']')
-                found_county_flag = False
                 for elem_county in chosen_state_element:
                     if elem_county.text.lower() == county.lower():
                         rtn.append('0' + chosen_state_element.attrib['id'] + elem_county.attrib['id'])
@@ -204,7 +191,6 @@ def check_3(stri):
                         break
                 if not found_state_flag:
                     return stri, 2, state + ' is not a state'
-                found_county_flag = False
                 for elem_county in chosen_state_element:
                     if elem_county.text.lower() == county.lower():
                         rtn.append('0' + chosen_state_element.attrib['id'] + elem_county.attrib['id'])
@@ -212,22 +198,22 @@ def check_3(stri):
                         break
                 if not found_county_flag:
                     return stri, 2, 'County ' + county + ' not found in ' + chosen_state_element.attrib['name']
-    outmsg = ''
-    for bar in rtn:
-        outmsg += bar + ' '
+
     if len(lcds) > 31:
         return stri, 2, + str(len(lcds)) + ' location codes entered (maximum is 31)'
+
     rtn_final = ''
     for i in range(len(rtn)):
         rtn_final += rtn[i]
         if i != (len(rtn) - 1):
             rtn_final += '-'
-    return rtn_final, 0, outmsg
+    return rtn_final, 0, ''
 
 
+# Purge time
 def check_4(stri):
     if stri == '0':
-        return '0000', 0, '0000'
+        return '0000', 0, ''
 
     if not stri.isnumeric() or len(stri) != 4:
         return stri, 2, 'Incorrect format, input must be in hhmm format'
@@ -237,47 +223,55 @@ def check_4(stri):
 
     if hour == 0:
         if minute % 15 == 0 and minute <= 45:
-            return stri, 0, stri
+            return stri, 0, ''
         else:
             return stri, 2, 'Purge time under 1 hour must be in 15 minute increments'
-
     if hour < 6:
         if minute == 0 or minute == 30:
-            return stri, 0, stri
+            return stri, 0, ''
         else:
             return stri, 2, 'Purge time between 1 to 6 hours must be in 30 minute increments'
-
     if minute == 0:
-        return stri, 0, stri
+        return stri, 0, ''
     else:
         return stri, 2, 'Purge time beyond 6 hours must be in 1 hour increments'
 
 
+# Issue time
 def check_5(stri):
     if stri == '0':
-        noww = dt.now(timezone.utc)
-        return noww.strftime('%j%H%M'), 0, noww.strftime('%j%H%M')
+        noww = dt.now(timezone.utc).strftime('%j%H%M')
+        return noww, 0, ''
+
     try:
-        dtm = dt.strptime(stri, "%d/%m/%y %H:%M").now(timezone.utc)
-        return dtm, 0, dtm.strftime('%j%H%M')
+        dtm = dt.strptime(stri, "%d/%m %H:%M").now(timezone.utc).strftime('%j%H%M')
+        return dtm, 0, ''
     except ValueError as e:
-        return stri, 2, 'incorrect format'
-        
+        return stri, 2, 'incorrect date format'
+
+
+# Station call sign
 def check_6(stri):
-    return 'EASSIMPC', 0, 'EASSIMPC'
+    if len(stri) != 8:
+        return stri, 2, 'Station callsign must be 8 characters long'
+
+    if any(c in "!@#$\\%^&*()-+?_=,<>\"" for c in stri):
+        return stri, 2, 'Station callsign must not contain special characters except for \'/\''
+
+    return stri, 0, ''
+
 
 ###########################################
 
 
 def main_loop():
-    instri = ''
     rtrnfinal = []
     rtrn = ''
     res = 0
     msg = ''
     i = 0
-    while i < 6:
 
+    while i < 6:
         print("Field " + str(i+1) + " - " + stages[i+1] + "\nEnter value: ")
         instri = input()
         if i == 0:
@@ -296,37 +290,31 @@ def main_loop():
         if res == 0:
             rtrnfinal.append(rtrn)
             i += 1
+            print()
         elif res == 1:
-            print('WARNING: ' + msg + '\nWould you still like to proceed? (Y for yes, enter to retry)')
+            print('WARNING: ' + msg + '\nWould you still like to proceed? (Y for yes, enter to revert)')
             instri = input()
             if instri == 'y' or instri == 'Y':
                 rtrnfinal.append(rtrn)
                 i += 1
+            print()
         elif res == 2:
             print('ERROR: ' + msg + " - Please try again.\n")
     
     return rtrnfinal
 
 
-
-
-
 ###########################################
 
-def test_code():
-    lcds = ["000000"]
-    now = dt.now()
-    sm_bin, sm_text = create_header("PEP", emergency_action_notification, lcds, "0001", now, "EASSIMPC")
-    print(sm_text)
-    aud = binary_to_signal(sm_bin, 44100)
-    write_audio_file(aud, now)
 
-print("Welcome to PySame\n")
+print("Welcome to PySame\nRefer to README for instructions.\n")
 mylist = main_loop()
-binaryData, stringData = create_header(mylist)
-print('Header created - ' + stringData + '\nPress Enter to continue')
 
+binaryData, stringData = create_header(mylist)
 aud = binary_to_signal(binaryData, 44100)
 filename = dt.now().strftime("SAME %Y%m%d %H%M%S.wav")
+
+print('Header created - ' + stringData + '\nPress Enter to save as WAV file . . .')
+input()
 write_audio_file(filename, 44100, aud)
 print("File saved as " + filename)
